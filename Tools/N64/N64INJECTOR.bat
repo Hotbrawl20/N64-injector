@@ -14,9 +14,6 @@ echo Icon file named iconTex.png OR iconTex.tga - Dimensions: 128x128
 echo TV banner named bootTvTex.png OR bootTvTex.tga - Dimensions: 1280x720
 echo 854x480 GamePad banner named bootDrcTex.png OR bootDrcTex.tga
 pause
-cls
-echo Soon there will be more than the Paper Mario base rom, but for now, only the paper mario base rom.
-pause
 cd ..
 cd ..
 cd Files
@@ -26,28 +23,50 @@ cd Tools
 cd N64
 cd Source
 if exist *.ini rename *.ini user.ini
-if exist *.v64 goto convert_v
-if exist *.n64 goto convert_n
-if exist *.z64 goto rename_z
-
+cls
+echo What Baserom are you wanting to use?
+echo Paper Mario [EUR] (1)
+echo F-Zero X (2)
+set /p Baserom=Enter the number behind the base rom: 
+if %Baserom%==1 goto checkingpmeu
+if %Baserom%==2 goto checkingfz
+:::::ROM CHECKING:::::
+:checkingpmeu
+if exist *.v64 goto convert_vpmeu
+if exist *.n64 goto convert_npmeu
+if exist *.z64 goto rename_zpmeu
+:checkingfz
+if exist *.v64 goto convert_vfz
+if exist *.n64 goto convert_nfz
+if exist *z64 goto rename_zfz
 :::::CONVERTING:::::
-:convert_n
+:convert_npmeu
 java -jar N64Converter.jar -i *.n64 -o game.z64
 cd ..
 goto papermarioeutitlekey
-:convert_v
+:convert_vpmeu
 java -jar N64Converter.jar -i *.v64 -o game.z64
 cd ..
 goto papermarioeutitlekey
-
+:convert_nfz
+java -jar N64Converter.jar -i *.n64 -o game.z64
+cd ..
+goto fztitlekey
+:convert_vfz
+java -jar N64Converter.jar -i *.v64 -o game.z64
+cd ..
+goto fztitlekey
 :::::RENAMEING:::::
-:rename_z
+:rename_zpmeu
 rename *.z64 game.z64
 cd ..
 goto papermarioeutitlekey
-
+:rename_zfz
+rename *.z64 game.z64
+cd ..
+goto fztitlekey
 :::::KEYS:::::
-:wrongtkey
+:wrongtkeypmeu
 del /q Tools\Storage\PMEUKEY
 echo Title Key is incorrect, try again
 pause
@@ -60,7 +79,7 @@ IF NOT EXIST "Tools\Storage\PMEUKEY" set /p PMEUKEY=Enter or copypaste the eShop
 IF NOT EXIST "Tools\Storage\PMEUKEY" echo %PMEUKEY:~0,32%>Tools\Storage\PMEUKEY
 set /p PMEUKEY=<Tools\Storage\PMEUKEY
 cls
-if not "%PMEUKEY:~0,4%"=="a694" goto:wrongtkey else goto commonpmeu
+if not "%PMEUKEY:~0,4%"=="a694" goto:wrongtkeypmeu else goto commonpmeu
 
 :commonpmeu
 IF NOT EXIST "Tools\Storage\COMMONPMEU" set /p COMMONPMEU=Enter or copypaste the WiiU Commonkey (Will not be required next time): >con
@@ -72,6 +91,30 @@ echo https://tagaya.wup.shop.nintendo.net/tagaya/versionlist/EUR/EU/latest_versi
 echo https://tagaya-wup.cdn.nintendo.net/tagaya/versionlist/EUR/EU/list/%d.versionlist>>Tools\JNUSTool\config
 goto download_pmeu
 
+:wrongtkeyfz
+del /q Tools\Storage\FZKEY
+echo Title Key is incorrect, try again
+pause
+cls
+goto fztitlekey
+
+:fztitlekey
+set FZID=00050000101ebc00
+IF NOT EXIST "Tools\Storage\FZKEY" set /p FZKEY=Enter or copypaste the eShop Title Key for F-Zero X [USA] (Will not be required next time for this base rom): 
+IF NOT EXIST "Tools\Storage\FZKEY" echo %FZKEY:~0,32%>Tools\Storage\FZKEY
+set /p FZKEY=<Tools\Storage\FZKEY
+cls
+if not "%FZKEY:~0,4%"=="bfdb" goto:wrongtkeyfz else goto commonfz
+
+:commonfz
+IF NOT EXIST "Tools\Storage\COMMONFZ" set /p COMMONFZ=Enter or copypaste the WiiU Commonkey (Will not be required next time for this base rom): >con
+IF NOT EXIST "Tools\Storage\COMMONFZ" echo %COMMONFZ:~0,32%>Tools\Storage\COMMONFZ
+set /p COMMONFZ=<Tools\Storage\COMMONFZ
+echo http://ccs.cdn.wup.shop.nintendo.net/ccs/download>Tools\JNUSTool\config
+echo %COMMONFZ:~0,32%>>Tools\JNUSTool\config
+echo https://tagaya.wup.shop.nintendo.net/tagaya/versionlist/EUR/EU/latest_version>>Tools\JNUSTool\config
+echo https://tagaya-wup.cdn.nintendo.net/tagaya/versionlist/EUR/EU/list/%d.versionlist>>Tools\JNUSTool\config
+goto download_fz
 :::::DOWNLOAD:::::
 :download_pmeu
 cd Tools
@@ -87,6 +130,19 @@ java -jar JNUSTool.jar %PMEUID% %PMEUKEY% -file /meta/Manual.bfma
 cls
 goto movefilespmeu
 
+:download_fz
+cd Tools
+cd JNUSTool
+java -jar JNUSTool.jar %FZID% %FZKEY% -file /code/.*
+cls
+java -jar JNUSTool.jar %FZID% %FZKEY% -file /content/.*
+cls
+java -jar JNUSTool.jar %FZID% %FZKEY% -file /meta/bootMovie.h264
+java -jar JNUSTool.jar %FZID% %FZKEY% -file /meta/meta.xml
+java -jar JNUSTool.jar %FZID% %FZKEY% -file /meta/bootSound.btsnd
+java -jar JNUSTool.jar %FZID% %FZKEY% -file /meta/Manual.bfma
+cls
+goto movefilesfz
 :::::MOVING:::::
 :movefilespmeu
 mkdir PMEU
@@ -99,11 +155,26 @@ cd ..
 cd ..
 goto checking_ini_pmeu
 
+:movefilesfz
+mkdir FZ
+cd "F-Zero X [NAWE01]"
+move code ../FZ
+move content ../FZ
+move meta ../FZ
+cd ..
+cd ..
+cd ..
+goto checking_ini_fz
 :::::CHECKING:::::
 :checking_ini_pmeu
 cd Source
 if exist user.ini goto inject_ini_pmeu
 if not exist user.ini goto use_blank_ini_pmeu
+
+:checking_ini_fz
+cd Source 
+if exist user.ini goto inject_ini_fz
+if not exist user.ini goto use_blank_ini_fz
 :::::INI STUFF:::::
 :inject_ini_pmeu
 rename user.ini UNMQP0.810.ini
@@ -122,6 +193,23 @@ cd ..
 cd Source
 move UNMQP0.810.ini ../Tools/JNUSTool/PMEU/content/config
 goto inject_rom_pmeu
+
+:inject_ini_fz
+rename user.ini Ucfze0.242.ini
+cd ..
+cd Tools
+cd FZ
+cd content
+cd config
+del /f /q Ucfze0.242.ini
+cd ..
+cd ..
+cd ..
+cd ..
+cd ..
+cd Source
+move Ucfze0.242.ini ../Tools/JNUSTool/FZ/content/config
+goto inject_rom_fz
 
 :use_blank_ini_pmeu
 cd ..
@@ -145,6 +233,28 @@ cd ..
 cd Source
 goto inject_rom_pmeu
 
+:use_blank_ini_fz
+cd ..
+cd Tools
+cd JNUSTool
+cd FZ
+cd content
+cd config
+del /f /q Ucfze0.242.ini
+cd ..
+cd ..
+cd ..
+cd .. 
+cd Storage
+cd GAME_FILES 
+copy Ucfze0.242.ini ..\..\JNUSTool\FZ\content\config
+pause
+cd ..
+cd ..
+cd ..
+cd Source
+goto inject_rom_fz
+
 :::::INJECTING:::::
 :inject_rom_pmeu
 rename game.z64 UNMQP0.810
@@ -163,6 +273,24 @@ cd ..
 cd Source
 move UNMQP0.810 ../Tools/JNUSTool/PMEU/content/rom
 goto movexml_pmeu
+
+:inject_rom_fz
+rename game.z64 Ucfze0.242
+cd ..
+cd Tools
+cd JNUSTool
+cd FZ
+cd content
+cd rom
+del /f /q Ucfze0.242
+cd ..
+cd ..
+cd ..
+cd ..
+cd ..
+cd Source
+move Ucfze0.242 ../Tools/JNUSTool/FZ/content/rom
+goto movexml_fz
 
 :::::XML STUFF:::::
 :movexml_pmeu
@@ -213,6 +341,55 @@ goto moveback_xml_pmeu
 move app.xml ../Tools/JNUSTool/PMEU/code
 move meta.xml ../Tools/JNUSTool/PMEU/meta
 goto bootdrcpng_pmeu
+
+:movexml_fz
+cd ..
+cd Tools
+cd JNUSTool
+cd FZ
+cd code
+move app.xml ../../../../Source
+cd ..
+cd meta
+move meta.xml ../../../../Source
+cd ..
+cd ..
+cd ..
+cd ..
+cd Source
+goto edit_appxml_fz
+
+:edit_appxml_fz
+set /p ID=Enter a 6-digit meta title ID you wish you use. Must only be HEX values. (0-F): >con
+echo.>con
+cls
+start notepadplusplus.exe app.xml
+cls
+echo The app.xml will open now.
+echo Please change the title id in line 6 to 000500001%ID%0
+echo Press enter when saved
+pause
+cls
+goto edit_metaxml_fz
+
+:edit_metaxml_fz
+cls
+start notepadplusplus.exe meta.xml
+cls
+echo The meta.xml file will now open.
+echo Please change the Product code (line 4)
+echo Title Id to 000500001%ID%0 (line 18)
+echo And the Long/shortnames to the Game name.
+echo after you saved, press enter.
+pause
+cls
+taskkill /f /im notepadplusplus.exe
+goto moveback_xml_fz
+
+:moveback_xml_fz
+move app.xml ../Tools/JNUSTool/FZ/code
+move meta.xml ../Tools/JNUSTool/FZ/meta
+goto bootdrcpng_fz
 
 :::::BOOT IMAGE FILES:::::
 :bootdrcpng_pmeu
@@ -277,6 +454,69 @@ goto usetemplatelogo_pmeu
 xcopy.exe ..\Tools\Storage\GAME_FILES\bootLogoTex.tga ..\Tools\JNUSTool\PMEU\meta
 cls
 goto packing_pmeu
+::::FZ::::
+:bootdrcpng_fz
+if exist bootDrcTex.png goto convertdrc_fz
+if not exist bootDrcTex.png goto bootimageDRCtga_fz
+:bootimageDRCtga_fz
+if exist bootDrcTex.tga goto movedrc_fz
+if not exist bootDrcTex.tga goto usetemplatedrc_fz
+:bootdrcpng_fz
+xcopy.exe  ..\Tools\Storage\GAME_FILES\bootDrcTex.tga ..\Tools\JNUSTool\FZ\meta
+cls
+goto bootimageTVpng_fz
+:convertdrc_fz
+png2tgacmd.exe -i bootDrcTex.png -o ..\Tools\JNUSTool\FZ\meta --width=854 --height=480 --tga-bpp=24 --tga-compression=none
+cls
+goto bootimageTVpng_fz
+:movedrc_fz
+move bootDrcTex.tga ../Tools/JNUSTool/FZ/meta
+cls
+goto bootimageTVpng_fz
+:bootimageTVpng_fz
+if exist bootTvTex.png goto converttv_fz
+if not exist bootTvTex.png goto bootimageTVtga_fz
+:bootimageTVtga_fz
+if exist bootTvTex.tga goto movetv_fz
+if not exist bootTvTex.tga goto usetemplatetv_fz
+:usetemplatetv_fz
+xcopy.exe ..\Tools\Storage\GAME_FILES\bootTvTex.tga ..\Tools\JNUSTool\FZ\meta
+cls
+goto bootimageIconpng_fz
+:converttv_fz
+png2tgacmd.exe -i bootTvTex.png -o ..\Tools\JNUSTool\FZ\meta --width=1280 --height=720 --tga-bpp=24 --tga-compression=none
+cls
+goto bootimageIconpng_fz
+:movetv_fz
+move bootTvTex.tga ../Tools/JNUSTool/FZ/meta
+cls
+goto bootimageIconpng_fz
+:bootimageIconpng_fz
+if exist iconTex.png goto moveicon_fz
+if not exist iconText.png goto bootimageIcontga_fz
+:bootimageIcontga_fz
+if exist iconTex.tga goto moveicon_fz
+if not exist iconTex.tga goto usetemplateicon_fz
+:usetemplateicon_fz
+xcopy.exe ..\Tools\Storage\GAME_FILES\iconTex.tga ..\Tools\JNUSTool\FZ\meta
+cls
+goto usetemplatelogo_fz
+:usetemplatedrc_fz
+xcopy.exe ..Tools\Storage\GAME_FILES\bootDrcTex.tga ..\Tools\JNUSTool\FZ\meta
+cls
+goto bootimageTVpng_fz
+:converticon_fz
+png2tgacmd.exe -i iconTex.png -o ..\Tools\JNUSTool\FZ\meta --width=128 --height=128 --tga-bpp=32 --tga-compression=none
+cls
+goto usetemplatelogo_fz
+:moveicon_fz
+move iconTex.tga ../Tools/JNUSTool/FZ/meta
+cls
+goto usetemplatelogo_fz
+:usetemplatelogo_fz
+xcopy.exe ..\Tools\Storage\GAME_FILES\bootLogoTex.tga ..\Tools\JNUSTool\FZ\meta
+cls
+goto packing_fz
 
 :::::PACKING:::::
 :packing_pmeu
@@ -290,6 +530,25 @@ move content ../../NUSPACKER/input
 move meta ../../NUSPACKER/input
 cd ..
 rd /f /q PMEU
+cd ..
+cd NUSPACKER
+start Pack_Games.bat
+cls
+echo if the Packer window closed, hit enter to finish the injection
+pause
+goto final
+
+:packing_fz
+del /f /q *.png
+cd ..
+cd Tools
+cd JNUSTool
+cd FZ
+move code ../../NUSPACKER/input
+move content ../../NUSPACKER/input
+move meta ../../NUSPACKER/input
+cd ..
+rd /f /q FZ
 cd ..
 cd NUSPACKER
 start Pack_Games.bat
