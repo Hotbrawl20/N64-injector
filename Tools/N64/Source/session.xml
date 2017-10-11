@@ -1,9 +1,0 @@
-<NotepadPlus>
-    <Session activeView="0">
-        <mainView activeIndex="1">
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="912" startPos="255" endPos="255" selMode="0" lang="XML" encoding="-1" filename="C:\Users\Nico\Desktop\N64 INJECTOR SCRIPT\Tools\N64\Source\app.xml" backupFilePath="" originalFileLastModifTimestamp="1507736028" mapFirstVisibleDisplayLine="-1" mapFirstVisibleDocLine="-1" mapLastVisibleDocLine="-1" mapNbLine="-1" mapHigherPos="-1" mapWidth="-1" mapHeight="-1" mapKByteInDoc="-1" mapWrapIndentMode="-1" mapIsWrap="no" />
-            <File firstVisibleLine="0" xOffset="0" scrollWidth="712" startPos="177" endPos="180" selMode="0" lang="XML" encoding="-1" filename="C:\Users\Nico\Desktop\N64 INJECTOR SCRIPT\Tools\N64\Source\meta.xml" backupFilePath="C:\Users\Nico\Desktop\N64 INJECTOR SCRIPT\Tools\N64\Source\backup\meta.xml@2017-10-11_173449" originalFileLastModifTimestamp="1507735856" mapFirstVisibleDisplayLine="-1" mapFirstVisibleDocLine="-1" mapLastVisibleDocLine="-1" mapNbLine="-1" mapHigherPos="-1" mapWidth="-1" mapHeight="-1" mapKByteInDoc="1" mapWrapIndentMode="-1" mapIsWrap="no" />
-        </mainView>
-        <subView activeIndex="0" />
-    </Session>
-</NotepadPlus>
